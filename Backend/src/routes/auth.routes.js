@@ -10,5 +10,11 @@ router.post(
   AuthValidator.validateRequest,
   AuthController.register,
 );
+router.post(
+  "/login",
+  AuthValidator.loginValidator,
+  AuthValidator.validateRequest,
+  AuthController.login,
+);
 
 export default router;

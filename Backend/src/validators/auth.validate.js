@@ -23,6 +23,22 @@ export const registerValidator = [
     .withMessage("Password must be at least 8 characters long."),
 ];
 
+export const loginValidator = [
+  body("email")
+    .isString()
+    .withMessage("Email must be a string.")
+    .bail()
+    .trim()
+    .isEmail()
+    .withMessage("A valid email address is required."),
+  body("password")
+    .isString()
+    .withMessage("Password must be a string.")
+    .bail()
+    .notEmpty()
+    .withMessage("Password is required."),
+];
+
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
 
@@ -38,4 +54,4 @@ const validateRequest = (req, res, next) => {
   return next();
 };
 
-export default { registerValidator, validateRequest };
+export default { registerValidator, loginValidator, validateRequest };
