@@ -18,5 +18,6 @@ router.post(
 );
 
 router.get("/get-me", AuthController.getMe);
+router.post("/logout", AuthController.logout);
 
 export default router;

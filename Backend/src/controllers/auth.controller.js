@@ -142,4 +142,9 @@ const getMe = async (req, res) => {
   }
 };
 
-export default { register, login, getMe };
+const logout = (req, res) => {
+  res.clearCookie("accessToken");
+  return res.status(200).json({ message: "Logout successful." });
+};
+
+export default { register, login, getMe, logout };
