@@ -17,4 +17,6 @@ router.post(
   AuthController.login,
 );
 
+router.get("/get-me", AuthController.getMe);
+
 export default router;

@@ -94,4 +94,52 @@ const login = async (req, res) => {
   }
 };
 
-export default { register, login };
+const getMe = async (req, res) => {
+  try {
+    const token = req.cookies?.accessToken;
+    if (!token) {
+      return res.status(401).json({ message: "Authentication required." });
+    }
+
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error("JWT_SECRET is not set. Add it to the .env file.");
+    }
+
+    let payload;
+    try {
+      payload = jwt.verify(token, jwtSecret);
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ message: "Invalid or expired token." });
+      }
+      throw error;
+    }
+
+    if (
+      !payload ||
+      typeof payload !== "object" ||
+      typeof payload.sub !== "string"
+    ) {
+      return res.status(401).json({ message: "Invalid or expired token." });
+    }
+
+    const user = await User.findById(payload.sub).select("username email");
+    if (!user) {
+      return res.status(401).json({ message: "Invalid or expired token." });
+    }
+
+    return res.status(200).json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Fetching current user failed:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+export default { register, login, getMe };
