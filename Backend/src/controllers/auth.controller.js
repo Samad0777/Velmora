@@ -4,7 +4,7 @@ import User from "../models/User.model.js";
 
 const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body ?? {};
+    const { username, email, password, role } = req.body ?? {};
 
     if (
       typeof username !== "string" ||
@@ -31,6 +31,7 @@ const register = async (req, res) => {
       username: username.trim(),
       email: normalizedEmail,
       password: hashedPassword,
+      ...(role && { role }),
     });
 
     return res.status(201).json({
@@ -39,6 +40,7 @@ const register = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
         createdAt: user.createdAt,
       },
     });
@@ -86,6 +88,7 @@ const login = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -96,35 +99,7 @@ const login = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const token = req.cookies?.accessToken;
-    if (!token) {
-      return res.status(401).json({ message: "Authentication required." });
-    }
-
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      throw new Error("JWT_SECRET is not set. Add it to the .env file.");
-    }
-
-    let payload;
-    try {
-      payload = jwt.verify(token, jwtSecret);
-    } catch (error) {
-      if (error instanceof jwt.JsonWebTokenError) {
-        return res.status(401).json({ message: "Invalid or expired token." });
-      }
-      throw error;
-    }
-
-    if (
-      !payload ||
-      typeof payload !== "object" ||
-      typeof payload.sub !== "string"
-    ) {
-      return res.status(401).json({ message: "Invalid or expired token." });
-    }
-
-    const user = await User.findById(payload.sub).select("username email");
+    const user = await User.findById(req.user.id).select("username email role");
     if (!user) {
       return res.status(401).json({ message: "Invalid or expired token." });
     }
@@ -134,6 +109,7 @@ const getMe = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {

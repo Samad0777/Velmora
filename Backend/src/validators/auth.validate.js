@@ -21,6 +21,10 @@ export const registerValidator = [
     .bail()
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long."),
+  body("role")
+    .optional()
+    .isIn(["user", "seller"])
+    .withMessage("Role must be either user or seller."),
 ];
 
 export const loginValidator = [
