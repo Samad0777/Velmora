@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  --color-warm-ivory: #F6F5F0;
+  --color-forest: #293E32;
+  --color-forest-hover: #1F3027;
+  --color-terracotta: #B77561;
+  --color-charcoal: #292929;
+  --color-warm-gray: #858078;
+  --color-soft-white: #FFFFFF;
+}
