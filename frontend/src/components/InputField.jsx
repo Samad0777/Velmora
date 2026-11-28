@@ -8,6 +8,8 @@ const InputField = ({
   type = "text",
   placeholder,
   helperText,
+  register,
+  error,
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const isPassword = type === "password";
@@ -26,9 +28,11 @@ const InputField = ({
           name={name}
           type={isPassword && isPasswordVisible ? "text" : type}
           placeholder={placeholder}
-          className={`h-[54px] w-full border border-warm-gray bg-soft-white px-[14px] text-[14px] text-charcoal outline-none placeholder:text-warm-gray focus:border-forest ${
+          className={`h-[54px] w-full border bg-soft-white px-[14px] text-[14px] text-charcoal outline-none placeholder:text-warm-gray focus:border-forest ${
             isPassword ? "pr-[48px]" : ""
-          }`}
+          } ${error ? "border-red-600" : "border-warm-gray"}`}
+          aria-invalid={Boolean(error)}
+          {...register}
         />
         {isPassword && (
           <button
@@ -45,11 +49,15 @@ const InputField = ({
           </button>
         )}
       </div>
-      {helperText && (
+      {error ? (
+        <p className="mt-[12px] text-[12px] leading-none text-red-600">
+          {error.message}
+        </p>
+      ) : helperText ? (
         <p className="mt-[12px] text-[12px] leading-none text-warm-gray">
           {helperText}
         </p>
-      )}
+      ) : null}
     </div>
   );
 };
