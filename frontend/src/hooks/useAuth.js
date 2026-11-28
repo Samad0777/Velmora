@@ -20,7 +20,8 @@ const useAuth = () => {
     } catch (error) {
       dispatch(
         setAuthError(
-          error.response?.data?.message || "Registration failed. Please try again.",
+          error.response?.data?.message ||
+            "Registration failed. Please try again.",
         ),
       );
       throw error;
@@ -33,6 +34,7 @@ const useAuth = () => {
       dispatch(setStatus("loading"));
       const response = await login(userData);
       dispatch(setUser(response.user));
+      console.log(response);
       return response;
     } catch (error) {
       dispatch(
@@ -43,7 +45,50 @@ const useAuth = () => {
       throw error;
     }
   };
-  return { registerHandler, loginHandler, status, loading, error };
+
+  const logoutHandler = async () => {
+    try {
+      dispatch(clearAuthError());
+      dispatch(setStatus("loading"));
+      await logout();
+      dispatch(clearUser());
+    } catch (error) {
+      dispatch(
+        setAuthError(
+          error.response?.data?.message || "Logout failed. Please try again.",
+        ),
+      );
+      throw error;
+    }
+  };
+
+  const currentUserHandler = async () => {
+    try {
+      dispatch(clearAuthError());
+      dispatch(setStatus("loading"));
+      const response = await getCurrentUser();
+      dispatch(setUser(response.user));
+      return response;
+    } catch (error) {
+      dispatch(
+        setAuthError(
+          error.response?.data?.message ||
+            "Fetching current user failed. Please try again.",
+        ),
+      );
+      throw error;
+    }
+  };
+
+  return {
+    registerHandler,
+    loginHandler,
+    logoutHandler,
+    currentUserHandler,
+    status,
+    loading,
+    error,
+  };
 };
 
 export default useAuth;
